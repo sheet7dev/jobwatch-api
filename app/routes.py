@@ -31,14 +31,14 @@ def add_application():
     return jsonify({"message": "Application added"}), 201
 
 
-@api_bp.route('/applications/<int:app_id>', methods=['PUT'])
+@api_bp.route('/applications/<int:app_id>', methods=['PATCH'])
 @jwt_required(optional=True)
-def update_application(id):
+def update_application(app_id):
     user_id = get_jwt_identity()
     data = request.get_json()
     status = data.get('status')
 
-    application = Application.query.filter_by(id=id, user_id=user_id).first()
+    application = Application.query.filter_by(id=app_id, user_id=user_id).first()
     if not application:
         return jsonify({"message": "Application not found"}), 404
 
@@ -47,6 +47,8 @@ def update_application(id):
 
     application.status = status
     db.session.commit()
+    return jsonify({"message": "Application updated"}), 200
+
 
 @api_bp.route('/applications', methods=['GET'])
 @jwt_required(optional=True)
@@ -79,3 +81,21 @@ def get_applications():
         })
 
     return jsonify(result), 200
+
+@api_bp.route('applications/<int:app_id>', methods=['GET'])
+@jwt_required(optional=True)
+def get_application(app_id):
+    user_id = get_jwt_identity()
+    application = Application.query.filter_by(id=app_id, user_id=user_id).first()
+    if not application:
+        return jsonify({"message": "Application not found"}), 404
+
+    return jsonify({
+        'id': application.id,
+        'company_name': application.company_name,
+        'job_position': application.job_position,
+        'submission_date': application.submission_date,
+        'job_link': application.job_link,
+        'status': application.status
+    }), 200
+
