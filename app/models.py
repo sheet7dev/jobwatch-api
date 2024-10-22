@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -27,6 +28,6 @@ class Application(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     company_name = db.Column(db.String(255), nullable=False)
     job_position = db.Column(db.String(255), nullable=False)
-    submission_date = db.Column(db.Date, nullable=False)
+    submission_date = db.Column(db.Date, nullable=False, default=datetime.today().date())
     job_link = db.Column(db.String(500))
     status = db.Column(db.String(20), default='pending')
