@@ -1,13 +1,13 @@
 import os
 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_cors import CORS
 from config import Config
 
-db = SQLAlchemy()
+from .models import db
+
 migrate = Migrate()
 jwt = JWTManager()
 
@@ -20,5 +20,8 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
     jwt.init_app(app)
     CORS(app)
+
+    from .routes import api_bp
+    app.register_blueprint(api_bp, url_prefix='/api')
 
     return app
